@@ -1,7 +1,12 @@
 #!/bin/bash
-PHPUNIT="echo phpunit"
-#PHPUNIT="/Applications/MAMP/bin/php/php5.3.28/bin/php $(which phpunit)"
-PHPUNIT="/Applications/MAMP/bin/php/php5.3.28/bin/php ./scripts/phpunit"
+PHP=${PHP:-php}
+PHPUNIT=${PHPUNIT:-phpunit}
+MODE=standalone
+
+if [ "$1" == "--civi" ]; then
+  MODE=civi
+  shift
+fi
 
 TESTSUITE="$1"
 shift
@@ -16,9 +21,12 @@ fi
 
 [ ! -d "$OUTDIR" ] && mkdir -p "$OUTDIR"
 
-phpunit-ls "$TESTSUITE"
+#phpunit-ls "$TESTSUITE"
 phpunit-ls "$TESTSUITE" | while read FILE CLASS METHOD ; do
-  echo "$FILE; $CLASS; $METHOD;"
-  echo $PHPUNIT --tap --log-json "$OUTDIR/$CLASS-$METHOD.json" --filter $METHOD'( with.*)?$' $CLASS
-  #$PHPUNIT --tap --log-json "$OUTDIR/$CLASS-$METHOD.json" --filter $METHOD'( with.*)?$' $FILE
+  if [ "$MODE" == "civi" ]; then
+    $PHP ./scripts/phpunit --tap --log-json "$OUTDIR/$CLASS-$METHOD.json" --filter $METHOD'( with.*)?$' "$CLASS"
+  fi
+  if [ "$MODE" == "standalone" ]; then
+    $PHP $(which $PHPUNIT) --tap --log-json "$OUTDIR/$CLASS-$METHOD.json" --filter $METHOD'( with.*)?$' "$FILE"
+  fi
 done
