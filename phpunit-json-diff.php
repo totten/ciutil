@@ -72,6 +72,9 @@ class DiffPrinter {
   }
 }
 
+###################################################################
+## Main
+
 if (empty($argv[1])) {
   echo "usage: phpunit-json-diff <json-file1> [<json-file2>...]\n";
   exit(1);
@@ -86,7 +89,7 @@ for ($i = 1; $i < count($argv); $i++) {
   );
 }
 
-$tests = array();
+$tests = array(); // array(string $name)
 foreach ($suites as $suiteName => $suite) {
   $tests = array_unique(array_merge(
     $tests,
