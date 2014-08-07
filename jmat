@@ -2,6 +2,7 @@
 ####################################################################
 function show_help() {
   echo "Jeanine Matthews - Divergent Hunter"
+  echo "summary: Execute test suite in multiple ways and compare results"
   echo "usage: env [var1=... var2=...] $0 [--bundled-full|--bf] [--bundled-indiv|--bi] [--standalone-full|--sf] [--standalone-indiv|--si] [--compare]"
   echo "Optional variables:"
   echo "  - CIVI: Path to Civi installation [$CIVI]"

@@ -15,6 +15,7 @@ OUTDIR="$1"
 shift
 
 if [ -z "$TESTSUITE" -o -z "$OUTDIR" -o ! -d "$OUTDIR" ]; then
+  echo "summary: Executes all tests in a suite (individually)"
   echo "usage: $0 <test-suite> <json-outdir>"
   exit 1
 fi
