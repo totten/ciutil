@@ -24,4 +24,4 @@ echo "Running individual tests"
 phpunit-indiv "$TESTSUITE" "$OUTDIR/indiv"
 cat "$OUTDIR"/indiv/*-*.json > "$OUTDIR/indiv/all.json"
 
-echo phpunit-json-diff "$OUTDIR/full/all.json" "$OUTDIR/indiv/all.json"
+echo phpunit-compare "$OUTDIR/full/all.json" "$OUTDIR/indiv/all.json"

@@ -76,7 +76,7 @@ class DiffPrinter {
 ## Main
 
 if (empty($argv[1])) {
-  echo "usage: phpunit-json-diff <json-file1> [<json-file2>...]\n";
+  echo "usage: phpunit-compare <json-file1> [<json-file2>...]\n";
   exit(1);
 }
 
