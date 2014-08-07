@@ -1,0 +1,12 @@
+{
+    "name": "totten/ciutil",
+    "require": {
+        "symfony/finder": "~2.5"
+    },
+    "authors": [
+        {
+            "name": "Tim Otten",
+            "email": "totten@civicrm.org"
+        }
+    ]
+}

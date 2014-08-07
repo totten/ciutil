@@ -1,0 +1,90 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * @param string $content phpunit streaming JSON
+ * @return array(string "$class::$func" => $status)
+ */
+function parse_json_stream($content) {
+  $content = '[' 
+   . strtr($content, array("}{" => "},{")) 
+   . ']';
+  return json_decode($content, TRUE);
+}
+
+function parse_junit_json($content) {
+  $records = parse_json_stream($content);
+  $results = array();
+  foreach ($records as $r) {
+    if ($r['event'] == 'test') {
+      $results[$r['test']] = $r['status'];
+    }
+  }
+  return $results;
+}
+
+class DiffPrinter {
+  var $fromFile, $toFile;
+  var $hasHeader = FALSE;
+  
+  function __construct($fromFile, $toFile) {
+    $this->fromFile = $fromFile;
+    $this->toFile = $toFile;
+  }
+  
+  function printHeader() {
+    if ($this->hasHeader) return;
+
+    //echo "diff {$this->fromFile} {$this->toFile}\n";
+    echo "+++ {$this->fromFile}\n";
+    echo "--- {$this->toFile}\n";
+    //printf("%-90s %-10s => %-10s\n", '----------', $this->fromFile, $this->toFile);
+
+    $this->hasHeader = TRUE;
+  }
+  
+  function printUnique($file, $testName, $testValue) {
+    $this->printHeader();
+    // echo "Only in $file: $testName\n";
+    if ($file == $this->fromFile) {
+      printf("%-90s %-10s => %-10s\n", $testName, $testValue, 'MISSING'); 
+    } else {
+      printf("%-90s %-10s => %-10s\n", $testName, 'MISSING', $testValue);
+    }
+  }
+  
+  function printChange($test, $fromValue, $toValue) {
+    $this->printHeader();
+    //echo "+ $test $fromValue\n";
+    //echo "- $test $toValue\n";
+    printf("%-90s %-10s => %-10s\n", $test, $fromValue, $toValue); 
+  }
+}
+
+if (empty($argv[1]) || !file_exists($argv[1]) || empty($argv[2]) || !file_exists($argv[1])) {
+  echo "usage: phpunit-json-diff <json-file> <json-file>\n";
+  exit(1);
+}
+
+$left = parse_junit_json(file_get_contents($argv[1]));
+$right = parse_junit_json(file_get_contents($argv[2]));
+$tests = array_unique(array_merge(
+  array_keys($left),
+  array_keys($right)
+));
+sort($tests);
+
+$printer = new DiffPrinter($argv[1], $argv[2]);
+foreach ($tests as $test) {
+  if (isset($left[$test])  && isset($right[$test])  && $left[$test]==$right[$test]) {
+    continue;
+  }
+
+  if (isset($left[$test]) && !isset($right[$test])) {
+    $printer->printUnique($argv[1], $test, $left[$test]);
+  } elseif (!isset($left[$test]) && isset($right[$test])) {
+    $printer->printUnique($argv[2], $test, $right[$test]);
+  } elseif ($left[$test] != $right[$test]) {
+    $printer->printChange($test, $left[$test], $right[$test]);
+  }
+}

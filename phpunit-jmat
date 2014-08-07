@@ -1,0 +1,27 @@
+#!/bin/bash
+PHPUNIT="echo phpunit"
+#PHPUNIT="/Applications/MAMP/bin/php/php5.3.28/bin/php $(which phpunit)"
+PHPUNIT="/Applications/MAMP/bin/php/php5.3.28/bin/php ./scripts/phpunit"
+
+TESTSUITE="$1"
+OUTDIR="$2"
+
+if [ -z "$TESTSUITE" -o -z "$OUTDIR" ]; then
+  echo "Jeanine Matthews - Divergent Hunter"
+  echo "usage: $0 <test-base-dir> <json-outdir>"
+  exit 1
+fi
+
+[ ! -d "$OUTDIR" ]       && mkdir -p "$OUTDIR"
+[ -d "$OUTDIR/indiv" ]   && rm -rf "$OUTDIR/indiv"
+#x [ -d "$OUTDIR/full" ]    && rm -rf "$OUTDIR/full"
+mkdir -p "$OUTDIR/full" "$OUTDIR/indiv"
+
+echo "Running full suite"
+#x $PHPUNIT --tap --log-json "$OUTDIR/full/all.json" "$TESTSUITE"
+
+echo "Running individual tests"
+phpunit-indiv "$TESTSUITE" "$OUTDIR/indiv"
+cat "$OUTDIR"/indiv/*-*.json > "$OUTDIR/indiv/all.json"
+
+echo phpunit-json-diff "$OUTDIR/full/all.json" "$OUTDIR/indiv/all.json"

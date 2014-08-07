@@ -1,0 +1,24 @@
+#!/bin/bash
+PHPUNIT="echo phpunit"
+#PHPUNIT="/Applications/MAMP/bin/php/php5.3.28/bin/php $(which phpunit)"
+PHPUNIT="/Applications/MAMP/bin/php/php5.3.28/bin/php ./scripts/phpunit"
+
+TESTSUITE="$1"
+shift
+
+OUTDIR="$1"
+shift
+
+if [ -z "$TESTSUITE" -o -z "$OUTDIR" -o ! -d "$OUTDIR" ]; then
+  echo "usage: $0 <test-suite> <json-outdir>"
+  exit 1
+fi
+
+[ ! -d "$OUTDIR" ] && mkdir -p "$OUTDIR"
+
+phpunit-ls "$TESTSUITE"
+phpunit-ls "$TESTSUITE" | while read FILE CLASS METHOD ; do
+  echo "$FILE; $CLASS; $METHOD;"
+  echo $PHPUNIT --tap --log-json "$OUTDIR/$CLASS-$METHOD.json" --filter $METHOD'( with.*)?$' $CLASS
+  #$PHPUNIT --tap --log-json "$OUTDIR/$CLASS-$METHOD.json" --filter $METHOD'( with.*)?$' $FILE
+done
