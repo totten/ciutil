@@ -1,3 +1,4 @@
 #!/usr/bin/env php
 <?php
-require_once __DIR__ . '/phpunit-compare.php';
+require_once __DIR__ . '/vendor/autoload.php';
+\CiUtil\Command\CompareCommand::main($argv);

@@ -3,6 +3,11 @@
     "require": {
         "symfony/finder": "~2.5"
     },
+    "autoload": {
+        "psr-0": {
+            "CiUtil\\": ["src/", "tests/"]
+        }
+    },
     "authors": [
         {
             "name": "Tim Otten",
