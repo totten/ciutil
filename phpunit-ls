@@ -1,58 +1,12 @@
 #!/usr/bin/env php
 <?php
-require_once '/Users/totten/buildkit/build/dmaster/sites/all/modules/civicrm/tests/phpunit/CiviTest/bootstrap.php';
+
 require_once __DIR__ . '/vendor/autoload.php';
-require_once '/Users/totten/buildkit/vendor/autoload.php';
-
-use Symfony\Component\Finder\Finder;
-
-error_reporting(E_ERROR & E_PARSE);
-
-/**
- * @return array<string> class names
- */
-function _findTestClasses($path) {
-  $origClasses = get_declared_classes();
-  require_once $path;
-  $newClasses = get_declared_classes();
-
-  return preg_grep('/Test$/', array_diff(
-    $newClasses, 
-    $origClasses
-  ));
+if (file_exists(__DIR__ . '/autoload.local.php')) {
+  require_once __DIR__ . '/autoload.local.php';
 }
 
-/**
- * @return array (string $file => string $class)
- */
-function findTestClasses($paths) {
-  $testClasses = array();
-  $finder = new Finder();
+//error_reporting(E_ERROR & E_PARSE);
+error_reporting(E_ALL);
 
-  foreach ($paths as $path) {
-    if (is_dir($path)) {
-      foreach ($finder->files()->in($paths)->name('*Test.php') as $file) {
-        $testClass = _findTestClasses((string)$file);
-        if (count($testClass) > 1) throw new Exception("Too many classes in $file");
-        $testClasses[(string)$file] = array_shift($testClass);
-      }
-    } elseif (is_file($path)) {
-      $testClass = _findTestClasses($path);
-      if (count($testClass) > 1) throw new Exception("Too many classes in $path");
-      $testClasses[$path] = array_shift($testClass);
-    }
-  }
-  
-  return $testClasses;
-}
-
-$paths = $argv;
-array_shift($paths);
-foreach (findTestClasses($paths) as $testFile => $testClass) {
-  $clazz = new ReflectionClass($testClass);
-  foreach ($clazz->getMethods() as $method) {
-    if (preg_match('/^test/', $method->name)) {
-      printf("%s %s %s\n", $testFile, $testClass, $method->name);
-    }
-  }
-}
+\CiUtil\Command\LsCommand::main($argv);

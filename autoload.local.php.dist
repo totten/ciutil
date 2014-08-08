@@ -1,0 +1,7 @@
+<?php
+
+//require_once '/Users/totten/buildkit/build/dmaster/sites/all/modules/civicrm/tests/phpunit/CiviTest/bootstrap.php';
+//require_once '/Users/totten/buildkit/vendor/autoload.php';
+
+require_once '/Users/totten/src/buildkit/build/drupal-clean/sites/all/modules/civicrm/tests/phpunit/CiviTest/bootstrap.php';
+require_once '/Users/totten/src/buildkit/vendor/autoload.php';
