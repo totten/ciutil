@@ -31,18 +31,28 @@ class PHPUnitScanner {
       if (is_dir($path)) {
         foreach ($finder->files()->in($paths)->name('*Test.php') as $file) {
           $testClass = self::_findTestClasses((string) $file);
-          if (count($testClass) > 1) {
-            throw new Exception("Too many classes in $file");
+          if (count($testClass) == 1) {
+            $testClasses[(string) $file] = array_shift($testClass);
           }
-          $testClasses[(string) $file] = array_shift($testClass);
+          elseif (count($testClass) > 1) {
+            throw new \Exception("Too many classes in $file");
+          }
+          else {
+            throw new \Exception("Too few classes in $file");
+          }
         }
       }
       elseif (is_file($path)) {
         $testClass = self::_findTestClasses($path);
-        if (count($testClass) > 1) {
-          throw new Exception("Too many classes in $path");
+        if (count($testClass) == 1) {
+          $testClasses[$path] = array_shift($testClass);
         }
-        $testClasses[$path] = array_shift($testClass);
+        elseif (count($testClass) > 1) {
+          throw new \Exception("Too many classes in $path");
+        }
+        else {
+          throw new \Exception("Too few classes in $path");
+        }
       }
     }
 
