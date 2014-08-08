@@ -1,2 +1,4 @@
 *~
 vendor/
+autoload.local.php
+.idea/
